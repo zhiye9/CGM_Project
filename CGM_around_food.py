@@ -519,3 +519,42 @@ X = scaler.transform(X)
 # The PCA model
 pca = PCA(n_components=2) # estimate only 2 PCs
 X_new = pca.fit_transform(X) # project the original data into the PCA space
+
+
+
+labels = ['BMI', 'Muscle_fat_ratio', 'Fitness','Muscle_mass']
+dpi = 600
+title = 'Regression results of outcomes and CGM features'
+
+x = np.arange(len(labels)) 
+train_mean = [np.mean(BMI_train), np.mean(MFratio_train), np.mean(Fit_train), np.mean(MuscleMass_train)]
+test_mean = [np.mean(BMI_test), np.mean(MFratio_test), np.mean(Fit_test), np.mean(MuscleMass_test)]
+train_std = [np.std(BMI_train), np.std(MFratio_train),  np.std(Fit_train), np.std(MuscleMass_train)]
+test_std = [np.std(BMI_test), np.std(MFratio_test), np.std(Fit_test), np.std(MuscleMass_test)]    
+
+fig, ax = plt.subplots(dpi = dpi)
+
+width = 0.35
+rects1 = ax.bar(x - width/2, train_mean, width, yerr = train_std, label='train', align='center', ecolor='black', capsize=2)
+rects2 = ax.bar(x + width/2, test_mean, width, yerr = test_std, label='test', align='center', ecolor='black', capsize=2)
+
+# Add some text for labels, title and custom x-axis tick labels, etc.
+ax.set_ylabel('R2')
+ax.set_title(title)
+ax.set_xticks(x)
+ax.set_xticklabels(labels)
+ax.legend()
+#plt.xticks(rotation=60)
+#plt.yticks(np.linspace(0.0,0.7,0.1))
+ax.set_xticklabels(labels, fontsize = 10)
+ax.bar_label(rects1, padding=3)
+ax.bar_label(rects2, padding=3)
+#for i, v in enumerate(train_mean):
+   # rects1.text(v + 3, i + .25, str(v), color='blue', fontweight='bold')
+    
+#for i, v in enumerate(test_mean):
+    #rects1.text(v + 3, i + .25, str(v), color='blue', fontweight='bold')
+    
+fig.tight_layout()
+
+plt.show()   
