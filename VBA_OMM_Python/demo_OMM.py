@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+sys.path.append('VBA_OMM_Python/')
 import VBA_OMM
 import csv
 import pickle
