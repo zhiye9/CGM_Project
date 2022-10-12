@@ -78,7 +78,6 @@ def VBA_glu(test, method = 'RaPL', display = False):
     return VBA_OMM.main(dat, priors, const, opt)
     
 out = VBA_glu(test1)
-out['posterior']['p1'][0]
 
 subjects = np.unique(df_glu_insulin['copsacno'])
 df_glu_insulin['Insulin'] = df_glu_insulin['Insulin2']
