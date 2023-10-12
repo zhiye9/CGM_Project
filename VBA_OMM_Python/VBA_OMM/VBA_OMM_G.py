@@ -1,8 +1,8 @@
 import numpy as np
-from . import VBA
-from . import f_OMM_RaPL as f_RaPL
-from . import f_OMM_RaLN as f_RaLN
-from . import logistic_mapping as LogMap
+import VBA
+import f_OMM_RaPL as f_RaPL
+import f_OMM_RaLN as f_RaLN
+import logistic_mapping as LogMap
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pl
 
@@ -306,7 +306,7 @@ def create_ResultsFigure(out):
     mo = out["Model_Output"]
     GA_fun = out["options"]["GA_fun"]
 
-    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12, 6))
+    fig, ax = plt.subplots(nrows=2, ncols=3, figsize=(12, 6), dpi = 1000)
     plt.subplots_adjust(left=0.08, bottom=0.05, right=0.95, top=0.95, wspace=0.3, hspace=0.3)
 
     # Summary

@@ -87,7 +87,7 @@
 #
 #   M. Eichenlaub 08/01/2020
 
-from . import VBA_OMM_G
+from VBA_OMM import VBA_OMM_G
 
 
 def main(dat, priors, const, opt):

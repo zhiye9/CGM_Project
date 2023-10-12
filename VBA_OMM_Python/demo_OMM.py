@@ -1,7 +1,9 @@
 import numpy as np
 import sys
-sys.path.append('VBA_OMM_Python/')
+sys.path.append('/home/zhi/data/CGM/CGM_Project/VBA_OMM_Python/')
 import VBA_OMM
+sys.path.append('/home/zhi/data/CGM/CGM_Project/VBA_OMM_Python/VBA_OMM/')
+import VBA_OMM_G
 import csv
 import pickle
 import os
@@ -75,9 +77,12 @@ def VBA_glu(test, method = 'RaPL', display = False):
                                     [0.5, 30],
                                     [0.7, 30]])})
 
-    return VBA_OMM.main(dat, priors, const, opt)
+    return VBA_OMM_G.main(dat, priors, const, opt)
     
 out = VBA_glu(test1)
+
+test2 = df_glu_insulin[df_glu_insulin['copsacno'] == '303'].sort_values('TIMEPOINT')[['copsacno', 'TIMEPOINT', 'Glucose', 'Insulin']]
+VBA_glu(test2, display = True)
 
 subjects = np.unique(df_glu_insulin['copsacno'])
 df_glu_insulin['Insulin'] = df_glu_insulin['Insulin2']
@@ -108,7 +113,7 @@ for i in range(len(subjects)):
     print("\r Process{}%".format(round((i+1)*100/len(subjects))), end="")
 
 
-
+os.chdir('/home/zhi/data/CGM/CGM_results')
 with open("out_list2", "wb") as fp:   
     pickle.dump(out_list, fp)
 
@@ -118,23 +123,55 @@ with open("out_list1", "rb") as fp:
 with open("out_list2", "rb") as fp:
     out_list_LN = pickle.load(fp)
 
-with open("p1_mean", "wb") as fp:   
-    pickle.dump(p1_mean, fp)
-with open("p2_mean", "wb") as fp:   
-    pickle.dump(p2_mean, fp)
-with open("SI_mean", "wb") as fp:   
-    pickle.dump(SI_mean, fp)
-with open("p1_CV", "wb") as fp:   
-    pickle.dump(p1_CV, fp)
-with open("p2_CV", "wb") as fp:   
-    pickle.dump(p2_CV, fp)
-with open("SI_CV", "wb") as fp:   
-    pickle.dump(SI_CV, fp)
+#with open("p1_mean", "wb") as fp:   
+   # pickle.dump(p1_mean, fp)
+with open("p1_mean", "rb") as fp:
+    p1_median = pickle.load(fp)
+
+#with open("p2_mean", "wb") as fp:   
+ #   pickle.dump(p2_mean, fp)
+with open("p2_mean", "rb") as fp:
+    p2_median = pickle.load(fp)
+
+#with open("SI_mean", "wb") as fp:   
+    #pickle.dump(SI_mean, fp)
+with open("SI_mean", "rb") as fp:
+    SI_median = pickle.load(fp)
+
+#with open("p1_CV", "wb") as fp:   
+   # pickle.dump(p1_CV, fp)
+with open("p1_CV", "rb") as fp:
+    p1_CV = pickle.load(fp)
+
+#with open("p2_CV", "wb") as fp:   
+   # pickle.dump(p2_CV, fp)
+with open("p2_CV", "rb") as fp:
+    p2_CV = pickle.load(fp)
+
+#with open("SI_CV", "wb") as fp:   
+  #  pickle.dump(SI_CV, fp)
+with open("SI_CV", "rb") as fp:
+    SI_CV = pickle.load(fp)
+
+k1 = []
+k2 = []
+k3 = []
+k4 = []
+k5 = []
+k6 = []
+for i in range(len(out_list_PL)):
+    k1.append()
 
 
 df_glu_insulin['Insulin'] = df_glu_insulin['Insulin2']
-sns.lineplot(data=df_glu_insulin, x='TIMEPOINT', y='Glucose')
-sns.lineplot(data=df_glu_insulin, x='TIMEPOINT', y='Insulin')
+
+sns.set(rc={"figure.dpi":1000})
+sns.set_style("ticks")
+sns.lineplot(data=df_glu_insulin, x='TIMEPOINT', y='C-pipetid')
+#sns.lineplot(data=df_glu_insulin, x='TIMEPOINT', y='Glucose')
+#sns.lineplot(data=df_glu_insulin, x='TIMEPOINT', y='Insulin')
+plt.legend(loc='upper right', labels=['Mean ± Std'])
+
 
 p1_median = [i['posterior']['p1'][0] for i in out_list_PL]
 p2_median = [i['posterior']['p2'][0] for i in out_list_PL]
@@ -184,15 +221,16 @@ model_results = pd.DataFrame({'copsacno': subs,
                         'p1 CV': p1_CV, 
                         'p2 CV': p2_CV,
                         'SI CV': SI_CV,
-                        'R2': R2,
-                        'RMSE': RMSE})
+                        #'R2': R2,
+                        #'RMSE': RMSE
+                        })
                     
 df_pheno = pd.read_csv('~/data/CGM/CGM_DATA/CGM3.csv')
 df_pheno['copsacno'] = df_pheno['copsacno'].astype(str)
 df_pheno = df_pheno.drop_duplicates(subset="copsacno")
-df_model_pheno = pd.merge(model_results, df_pheno, on = 'copsacno')
-df_model_pheno = pd.get_dummies(df_model_pheno, columns=['Race'], drop_first = True)
-df_model_pheno = df_model_pheno.fillna(method = 'backfill')
+df_model_pheno_model = pd.merge(model_results, df_pheno, on = 'copsacno')
+df_model_pheno_model = pd.get_dummies(df_model_pheno_model, columns=['Race'], drop_first = True)
+df_model_pheno_model = df_model_pheno_model.fillna(method = 'backfill')
 
 df_model_pheno_new = df_model_pheno[['p1 CV', 'p2 CV', 'SI CV', 'Sex_binary']]
 df_model_pheno_m = df_model_pheno[df_model_pheno['Sex_binary'] == 1][['p1 median', 'p2 median', 'SI median', 'Sex_binary']]
@@ -206,7 +244,7 @@ legend.set_title("Sex")
 for t, l in zip(legend.texts,("Male", "Female")):
     t.set_text(l)
 
-ax = sns.boxplot(data=df_model_pheno_m, x = , hue = "Sex_binary")
+ax = sns.boxplot(data=df_model_pheno_m, x = df_model_pheno_m.columns[:3], hue = "Sex_binary")
  
 # Add jitter with the swarmplot function
 ax = sns.swarmplot(data=df_model_pheno_m['p1 median', 'p2 median', 'SI median'], hue = "Sex_binary")
@@ -221,16 +259,56 @@ x_var = ['p1 median', 'p2 median', 'SI median', 'p1 CV', 'p2 CV',
 scaler.fit(np.array(df_model_pheno[x_var]))
 X = scaler.transform(np.array(df_model_pheno[x_var])) 
 X = np.array(df_model_pheno[x_var])
-X_reg = np.concatenate((X, np.array(df_model_pheno[['Sex_binary']]), np.array(df_model_pheno[['Race_non-caucasian']])), axis = 1)
+X_reg = np.concatenate((X, np.array(df_model_pheno[['Sex_binary']])), axis = 1)
+#X_reg = np.concatenate((np.array(df_model_pheno[['Sex_binary']]), np.array(df_model_pheno[['Race_non-caucasian']])), axis = 1)
 X_reg = X
 #BMI_train, BMI_test = CV(p_grid = par_gridsvr, out_fold = 5, in_fold = 5, model = SVR(), X = X_reg, y = preprocessing.scale(df_new_outcome['bmi18y']), n_beta = False, rand = 66)
 BMI_train, BMI_test, beta_BMI = CV(p_grid = par_grid, out_fold = 5, in_fold = 5, model = ElasticNet(), X = X_reg, y = preprocessing.scale(df_model_pheno['bmi18y']), n_beta = 11, rand = 76)
 MFratio_train, MFratio_test, beta_MFratio = CV(p_grid = par_grid, out_fold = 5, in_fold = 5, model = ElasticNet(), X = X_reg, y = preprocessing.scale(df_model_pheno['Musclefatratio']), n_beta = 8, rand = 99)
 Fit_train, Fit_test, beta_Fit = CV(p_grid = par_grid, out_fold = 5, in_fold = 5, model = ElasticNet(), X = X_reg, y = preprocessing.scale(df_model_pheno['FITNESS']), n_beta = 11, rand = 66)
 MuscleMass_train, MuscleMass_test, beta_MuscleMass = CV(p_grid = par_grid, out_fold = 5, in_fold = 5, model = ElasticNet(), X = X_reg, y = preprocessing.scale(df_model_pheno['Muscle_mass']), n_beta = 11, rand = 99)
+WHR_train, WHR_test, beta_WHR = CV(p_grid = par_grid, out_fold = 5, in_fold = 5, model = ElasticNet(), X = X_reg, y = preprocessing.scale(df_model_pheno['waisthipratio']), n_beta = 11, rand = 99)
+Bonemass_train, Bonemass_test, beta_Bonemass = CV(p_grid = par_grid, out_fold = 5, in_fold = 5, model = ElasticNet(), X = X_reg, y = preprocessing.scale(df_model_pheno['Bone_mass']), n_beta = 11, rand = 99)
+Tfat_train, Tfat_test, beta_Tfat = CV(p_grid = par_grid, out_fold = 5, in_fold = 5, model = ElasticNet(), X = X_reg, y = preprocessing.scale(df_model_pheno['Trunkfat_percent']), n_beta = 11, rand = 99)
+Sk_train, Sk_test, Sk_Vfat = CV(p_grid = par_grid, out_fold = 5, in_fold = 5, model = ElasticNet(), X = X_reg, y = preprocessing.scale(df_model_pheno['Skelmuscle_mass']), n_beta = 11, rand = 99)
+
+
 #MuscleMass_train, MuscleMass_test = CV(p_grid = par_gridsvr, out_fold = 5, in_fold = 5, model = SVR(), X = X_reg, y = preprocessing.scale(df_new_outcome['Muscle_mass']), n_beta = False, rand = 66)
 
 BMI_train, BMI_test = CV(p_grid = par_gridsvr, out_fold = 5, in_fold = 5, model = SVR(), X = X_reg, y = preprocessing.scale(df_model_pheno['bmi18y']), n_beta = False, rand = 66)
 MFratio_train, MFratio_test = CV(p_grid = par_gridsvr, out_fold = 5, in_fold = 5, model = SVR(), X = X_reg, y = preprocessing.scale(df_model_pheno['Musclefatratio']), n_beta = False, rand = 99)
 Fit_train, Fit_test = CV(p_grid = par_gridsvr, out_fold = 5, in_fold = 5, model = SVR(), X = X_reg, y = preprocessing.scale(df_model_pheno['FITNESS']), n_beta = False, rand = 66)
 MuscleMass_train, MuscleMass_test = CV(p_grid = par_gridsvr, out_fold = 5, in_fold = 5, model = SVR(), X = X_reg, y = preprocessing.scale(df_model_pheno['Muscle_mass']), n_beta = False, rand = 99)
+WHR_train, WHR_test = CV(p_grid = par_gridsvr, out_fold = 5, in_fold = 5, model = SVR(), X = X_reg, y = preprocessing.scale(df_model_pheno['waisthipratio']), n_beta = False, rand = 99)
+
+def CV(p_grid, out_fold, in_fold, model, X, y, rand, n_beta = False):
+    outer_cv = KFold(n_splits = out_fold, shuffle = True, random_state = rand)
+    inner_cv = KFold(n_splits = in_fold, shuffle = True, random_state = rand)
+    r2train = []
+    r2test = []
+    beta = []
+    
+    for j, (train, test) in enumerate(outer_cv.split(X, y)):
+        #split dataset to decoding set and test set
+        x_train, x_test = X[train], X[test]
+        y_train, y_test = y[train], y[test]
+        clf =  GridSearchCV(estimator = model, param_grid = p_grid, cv = inner_cv, scoring = "r2")
+        clf.fit(x_train, y_train)
+        if (n_beta):
+            beta.append(clf.best_estimator_.coef_[:n_beta])
+        #print(j)
+        
+        #predict labels on the train set
+        y_pred = clf.predict(x_train)
+        #print(y_pred)
+        r2train.append(r2_score(y_train, y_pred))
+        
+        #predict labels on the test set
+        y_pred = clf.predict(x_test)
+        #print(y_pred)
+        r2test.append(r2_score(y_test, y_pred))
+        
+    if (n_beta):
+        return r2train, r2test, beta
+    else:
+        return r2train, r2test
