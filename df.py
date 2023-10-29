@@ -55,6 +55,8 @@ df_diet = df_diet.rename(columns = {"COPSACNO":"copsacno"})
 df_diet = df_diet.tail(df_diet.shape[0] - 4)
 df_diet['copsacno'] = df_diet['copsacno'].astype(str)
 df_diet.reset_index(drop = True, inplace = True)
+df_diet = df_diet[df_diet.columns[3:]]
+df_diet = df_diet.drop('COMMENTS', axis = 1)
 
 df_diet = df_diet[['copsacno', 'TIMEPOINT', 'Glucose']]
 df_diet['Glucose'] = df_diet['Glucose'].astype(float)
@@ -75,12 +77,13 @@ df_diet2['age'] = df_diet2['age'].astype(float)
 df_diet2 = df_diet2[['copsacno', 'TIMEPOINT', 'age', 'Insulin', 'C-peptid_nmol/L']]
 df_diet2['copsacno'] = df_diet2['copsacno'].astype(str)
 df_diet2['TIMEPOINT'] = df_diet2['TIMEPOINT'].astype(float)
-df_glu_insulin = pd.merge(df_diet, df_diet2, on = ['copsacno', 'TIMEPOINT'])
+df_glu_insulin = pd.merge(df_diet2, df_diet, on = ['copsacno', 'TIMEPOINT'])
 df_glu_insulin = df_glu_insulin.rename(columns={'C-peptid_nmol/L': 'C-peptid'})
 
 df_glu_insulin = df_glu_insulin.sort_values(['copsacno', 'TIMEPOINT'])
 df_glu_insulin_8 = df_glu_insulin.groupby('copsacno').filter(lambda x: len(x) == 8)
-df_glu_insulin_8.to_csv('/home/zhi/data/CGM/CGM_DATA/df_glu_insulin_Cpeptid.csv', index = False)
+#df_glu_insulin_8.to_csv('/home/zhi/data/CGM/CGM_DATA/df_glu_insulin_Cpeptid.csv', index = False)
+#df_glu_insulin_8.to_csv('/home/zhi/data/CGM/CGM_DATA/df_biochem_insulin_Cpeptid.csv', index = False)
 
 df_glu_insulin_Cpeptid = pd.read_csv('/home/zhi/data/CGM/CGM_DATA/df_glu_insulin_Cpeptid.csv')
 df_glu_insulin_Cpeptid['copsacno'] = df_glu_insulin_Cpeptid['copsacno'].astype(str)
