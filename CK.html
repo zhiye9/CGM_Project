@@ -1730,9 +1730,19 @@ dim(df_bio)</code></pre>
 
 #Concatenate different biomarkers together
 df_bio_wide &lt;- df_bio %&gt;%
-  pivot_wider(names_from = TIMEPOINT, values_from = chem, names_sep = &quot;&quot;)
-
-#Drop the copsacno
+  pivot_wider(names_from = TIMEPOINT, values_from = chem, names_sep = &quot;&quot;)</code></pre>
+<pre><code>## Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
+## ℹ Please use `all_of()` or `any_of()` instead.
+##   # Was:
+##   data %&gt;% select(chem)
+## 
+##   # Now:
+##   data %&gt;% select(all_of(chem))
+## 
+## See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
+<pre class="r"><code>#Drop the copsacno
 df_cal = df_bio_wide[, 2:ncol(df_bio_wide)]
 
 t = unique(df_biochem$TIMEPOINT)
@@ -1744,18 +1754,129 @@ sub = 1:length(unique(df_biochem$copsacno))
 dim(df_cal)</code></pre>
 <pre><code>## [1] 268  24</code></pre>
 <pre class="r"><code>colnames(df_cal)</code></pre>
-<pre><code>##  [1] &quot;Glucose0&quot;    &quot;Glucose15&quot;   &quot;Glucose30&quot;   &quot;Glucose60&quot;   &quot;Glucose90&quot;   &quot;Glucose120&quot;  &quot;Glucose150&quot;  &quot;Glucose240&quot;  &quot;Insulin0&quot;    &quot;Insulin15&quot;   &quot;Insulin30&quot;   &quot;Insulin60&quot;   &quot;Insulin90&quot;   &quot;Insulin120&quot;  &quot;Insulin150&quot; 
-## [16] &quot;Insulin240&quot;  &quot;C.peptid0&quot;   &quot;C.peptid15&quot;  &quot;C.peptid30&quot;  &quot;C.peptid60&quot;  &quot;C.peptid90&quot;  &quot;C.peptid120&quot; &quot;C.peptid150&quot; &quot;C.peptid240&quot;</code></pre>
+<pre><code>##  [1] &quot;Glucose0&quot;    &quot;Glucose15&quot;   &quot;Glucose30&quot;   &quot;Glucose60&quot;   &quot;Glucose90&quot;   &quot;Glucose120&quot;  &quot;Glucose150&quot;  &quot;Glucose240&quot;  &quot;Insulin0&quot;    &quot;Insulin15&quot;   &quot;Insulin30&quot;   &quot;Insulin60&quot;   &quot;Insulin90&quot;  
+## [14] &quot;Insulin120&quot;  &quot;Insulin150&quot;  &quot;Insulin240&quot;  &quot;C.peptid0&quot;   &quot;C.peptid15&quot;  &quot;C.peptid30&quot;  &quot;C.peptid60&quot;  &quot;C.peptid90&quot;  &quot;C.peptid120&quot; &quot;C.peptid150&quot; &quot;C.peptid240&quot;</code></pre>
 <p>Then we apply CausalKinetiX on Glucose, Insulin and C-peptide to infer their parent variables. To view more detials we print all outputs.</p>
 <pre class="r"><code>for (i in 1:length(chem)) {
     target = i
     ck.fit &lt;- CausalKinetiX(df_cal, t, sub, target, pars=list(expsize=1, average.reps=TRUE))
     cat(sprintf(&quot;Parent variables of %s are&quot;, chem[target]), chem[ck.fit$ranking[1]], chem[ck.fit$ranking[2]], chem[ck.fit$ranking[3]], &quot;\n&quot;)
-  #  print(ck.fit)
+    print(ck.fit)
 }</code></pre>
 <pre><code>## Parent variables of Glucose are Insulin Glucose C.peptid 
+## $models
+## $models[[1]]
+## $models[[1]][[1]]
+## [1] 1
+## 
+## $models[[1]][[2]]
+## [1] 2
+## 
+## 
+## $models[[2]]
+## $models[[2]][[1]]
+## [1] 1
+## 
+## $models[[2]][[2]]
+## [1] 3
+## 
+## 
+## $models[[3]]
+## $models[[3]][[1]]
+## [1] 2
+## 
+## $models[[3]][[2]]
+## [1] 3
+## 
+## 
+## 
+## $model.scores
+## [1] 9.512126 9.824243 8.838726
+## 
+## $variable.scores
+## [1] 0.0000000 0.3333333 0.3333333
+## 
+## $ranking
+## [1] 2 1 3
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;CausalKinetiX&quot;
 ## Parent variables of Insulin are Insulin Glucose C.peptid 
-## Parent variables of C.peptid are Insulin Glucose C.peptid</code></pre>
+## $models
+## $models[[1]]
+## $models[[1]][[1]]
+## [1] 1
+## 
+## $models[[1]][[2]]
+## [1] 2
+## 
+## 
+## $models[[2]]
+## $models[[2]][[1]]
+## [1] 1
+## 
+## $models[[2]][[2]]
+## [1] 3
+## 
+## 
+## $models[[3]]
+## $models[[3]][[1]]
+## [1] 2
+## 
+## $models[[3]][[2]]
+## [1] 3
+## 
+## 
+## 
+## $model.scores
+## [1] 539852.5 572798.5 518171.2
+## 
+## $variable.scores
+## [1] 0.0000000 0.3333333 0.3333333
+## 
+## $ranking
+## [1] 2 1 3
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;CausalKinetiX&quot;
+## Parent variables of C.peptid are Insulin Glucose C.peptid 
+## $models
+## $models[[1]]
+## $models[[1]][[1]]
+## [1] 1
+## 
+## $models[[1]][[2]]
+## [1] 2
+## 
+## 
+## $models[[2]]
+## $models[[2]][[1]]
+## [1] 1
+## 
+## $models[[2]][[2]]
+## [1] 3
+## 
+## 
+## $models[[3]]
+## $models[[3]][[1]]
+## [1] 2
+## 
+## $models[[3]][[2]]
+## [1] 3
+## 
+## 
+## 
+## $model.scores
+## [1] 5.861743 6.887934 6.454563
+## 
+## $variable.scores
+## [1] 0.0000000 0.3333333 0.3333333
+## 
+## $ranking
+## [1] 2 1 3
+## 
+## attr(,&quot;class&quot;)
+## [1] &quot;CausalKinetiX&quot;</code></pre>
 <p>The CausalKinetiX infered that Insulin is the partent variable of Glucose, Insulin itself and C-peptide. The rest two biomarkers have same weight since the variable scores are same. This is an potential problem since for Glucose, the level of Glucose will affect itself but C-peptide doesn’t. And for Insulin, C-peptid should play an important role in its correct folding while the result rank Insulin itself above C-peptide. The last model find Insulin as C-peptide’s parent but it should be Glucose and C-peptide.</p>
 <div id="experiments-on-six-biomarkers" class="section level3">
 <h3>Experiments on six biomarkers</h3>
@@ -1773,8 +1894,8 @@ dim(df_cal)</code></pre>
     Pyruvate -&gt; Lactate
     Pyruvate -&gt; Ala
     Pyruvate -&gt; bOHbutyrate}&quot;)</code></pre>
-<div id="htmlwidget-468124199cac38f59e8d" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-468124199cac38f59e8d">{"x":{"diagram":"digraph {Insulin -> Glucose\n    Glucose -> Glucose\n    Pyruvate -> Glucose\n    Insulin -> Insulin\n    Cpeptide -> Insulin \n    Glucose -> Cpeptide\n    Cpeptide -> Cpeptide\n    Glucose -> Pyruvate\n    Lactate -> Pyruvate\n    Ala -> Pyruvate\n    Pyruvate -> Lactate\n    Pyruvate -> Ala\n    Pyruvate -> bOHbutyrate}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-f9a68e42b5567feb05b0" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-f9a68e42b5567feb05b0">{"x":{"diagram":"digraph {Insulin -> Glucose\n    Glucose -> Glucose\n    Pyruvate -> Glucose\n    Insulin -> Insulin\n    Cpeptide -> Insulin \n    Glucose -> Cpeptide\n    Cpeptide -> Cpeptide\n    Glucose -> Pyruvate\n    Lactate -> Pyruvate\n    Ala -> Pyruvate\n    Pyruvate -> Lactate\n    Pyruvate -> Ala\n    Pyruvate -> bOHbutyrate}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 <p>The directed graph indicates the parent variables of each variable as below.</p>
 <ul>
 <li>Glucose: Insulin, Glucose, Pyruvate</li>
@@ -1790,11 +1911,8 @@ dim(df_cal)</code></pre>
 df_bio = subset(df_biochem, select = -c(SAMPLEDATE, age))
 
 #Impute NAs
-df_bio[, 3:ncol(df_bio)] &lt;- mutate_all(df_bio[, 3:ncol(df_bio)], function(x) as.numeric(as.character(x)))</code></pre>
-<pre><code>## Warning in (function (x) : NAs introduced by coercion</code></pre>
-<pre><code>## Warning in (function (x) : NAs introduced by coercion</code></pre>
-<pre><code>## Warning in (function (x) : NAs introduced by coercion</code></pre>
-<pre class="r"><code>na_col = names(which(colSums(is.na(df_bio)) &gt; 0))
+df_bio[, 3:ncol(df_bio)] &lt;- mutate_all(df_bio[, 3:ncol(df_bio)], function(x) as.numeric(as.character(x)))
+na_col = names(which(colSums(is.na(df_bio)) &gt; 0))
 for (i in 1:length(na_col)) {df_bio[na_col[i]][is.na(df_bio[na_col[i]])] = median(df_bio[[na_col[i]]], na.rm = TRUE)}
 
 df_bio = subset(df_bio, select = c(&quot;copsacno&quot;, &quot;TIMEPOINT&quot;, &quot;Glucose&quot;, &quot;Insulin&quot;, &quot;C.peptid&quot;,&quot;Pyruvate&quot;, &quot;Lactate&quot;, &quot;Ala&quot;, &quot;bOHbutyrate&quot;))
@@ -1826,11 +1944,12 @@ sub = 1:length(unique(df_biochem$copsacno))
 dim(df_cal)</code></pre>
 <pre><code>## [1] 268  56</code></pre>
 <pre class="r"><code>colnames(df_cal)</code></pre>
-<pre><code>##  [1] &quot;Glucose0&quot;       &quot;Glucose15&quot;      &quot;Glucose30&quot;      &quot;Glucose60&quot;      &quot;Glucose90&quot;      &quot;Glucose120&quot;     &quot;Glucose150&quot;     &quot;Glucose240&quot;     &quot;Insulin0&quot;       &quot;Insulin15&quot;      &quot;Insulin30&quot;      &quot;Insulin60&quot;     
-## [13] &quot;Insulin90&quot;      &quot;Insulin120&quot;     &quot;Insulin150&quot;     &quot;Insulin240&quot;     &quot;C.peptid0&quot;      &quot;C.peptid15&quot;     &quot;C.peptid30&quot;     &quot;C.peptid60&quot;     &quot;C.peptid90&quot;     &quot;C.peptid120&quot;    &quot;C.peptid150&quot;    &quot;C.peptid240&quot;   
-## [25] &quot;Pyruvate0&quot;      &quot;Pyruvate15&quot;     &quot;Pyruvate30&quot;     &quot;Pyruvate60&quot;     &quot;Pyruvate90&quot;     &quot;Pyruvate120&quot;    &quot;Pyruvate150&quot;    &quot;Pyruvate240&quot;    &quot;Lactate0&quot;       &quot;Lactate15&quot;      &quot;Lactate30&quot;      &quot;Lactate60&quot;     
-## [37] &quot;Lactate90&quot;      &quot;Lactate120&quot;     &quot;Lactate150&quot;     &quot;Lactate240&quot;     &quot;Ala0&quot;           &quot;Ala15&quot;          &quot;Ala30&quot;          &quot;Ala60&quot;          &quot;Ala90&quot;          &quot;Ala120&quot;         &quot;Ala150&quot;         &quot;Ala240&quot;        
-## [49] &quot;bOHbutyrate0&quot;   &quot;bOHbutyrate15&quot;  &quot;bOHbutyrate30&quot;  &quot;bOHbutyrate60&quot;  &quot;bOHbutyrate90&quot;  &quot;bOHbutyrate120&quot; &quot;bOHbutyrate150&quot; &quot;bOHbutyrate240&quot;</code></pre>
+<pre><code>##  [1] &quot;Glucose0&quot;       &quot;Glucose15&quot;      &quot;Glucose30&quot;      &quot;Glucose60&quot;      &quot;Glucose90&quot;      &quot;Glucose120&quot;     &quot;Glucose150&quot;     &quot;Glucose240&quot;     &quot;Insulin0&quot;       &quot;Insulin15&quot;      &quot;Insulin30&quot;     
+## [12] &quot;Insulin60&quot;      &quot;Insulin90&quot;      &quot;Insulin120&quot;     &quot;Insulin150&quot;     &quot;Insulin240&quot;     &quot;C.peptid0&quot;      &quot;C.peptid15&quot;     &quot;C.peptid30&quot;     &quot;C.peptid60&quot;     &quot;C.peptid90&quot;     &quot;C.peptid120&quot;   
+## [23] &quot;C.peptid150&quot;    &quot;C.peptid240&quot;    &quot;Pyruvate0&quot;      &quot;Pyruvate15&quot;     &quot;Pyruvate30&quot;     &quot;Pyruvate60&quot;     &quot;Pyruvate90&quot;     &quot;Pyruvate120&quot;    &quot;Pyruvate150&quot;    &quot;Pyruvate240&quot;    &quot;Lactate0&quot;      
+## [34] &quot;Lactate15&quot;      &quot;Lactate30&quot;      &quot;Lactate60&quot;      &quot;Lactate90&quot;      &quot;Lactate120&quot;     &quot;Lactate150&quot;     &quot;Lactate240&quot;     &quot;Ala0&quot;           &quot;Ala15&quot;          &quot;Ala30&quot;          &quot;Ala60&quot;         
+## [45] &quot;Ala90&quot;          &quot;Ala120&quot;         &quot;Ala150&quot;         &quot;Ala240&quot;         &quot;bOHbutyrate0&quot;   &quot;bOHbutyrate15&quot;  &quot;bOHbutyrate30&quot;  &quot;bOHbutyrate60&quot;  &quot;bOHbutyrate90&quot;  &quot;bOHbutyrate120&quot; &quot;bOHbutyrate150&quot;
+## [56] &quot;bOHbutyrate240&quot;</code></pre>
 <p>Then we apply CausalKinetiX on this data set again to infer parent variables of 7 biomarkers.</p>
 <pre class="r"><code>for (i in 1:length(chem)) {
     target = i
