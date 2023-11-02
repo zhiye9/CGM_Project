@@ -1730,19 +1730,9 @@ dim(df_bio)</code></pre>
 
 #Concatenate different biomarkers together
 df_bio_wide &lt;- df_bio %&gt;%
-  pivot_wider(names_from = TIMEPOINT, values_from = chem, names_sep = &quot;&quot;)</code></pre>
-<pre><code>## Warning: Using an external vector in selections was deprecated in tidyselect 1.1.0.
-## ℹ Please use `all_of()` or `any_of()` instead.
-##   # Was:
-##   data %&gt;% select(chem)
-## 
-##   # Now:
-##   data %&gt;% select(all_of(chem))
-## 
-## See &lt;https://tidyselect.r-lib.org/reference/faq-external-vector.html&gt;.
-## This warning is displayed once every 8 hours.
-## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</code></pre>
-<pre class="r"><code>#Drop the copsacno
+  pivot_wider(names_from = TIMEPOINT, values_from = chem, names_sep = &quot;&quot;)
+
+#Drop the copsacno
 df_cal = df_bio_wide[, 2:ncol(df_bio_wide)]
 
 t = unique(df_biochem$TIMEPOINT)
@@ -1894,8 +1884,8 @@ dim(df_cal)</code></pre>
     Pyruvate -&gt; Lactate
     Pyruvate -&gt; Ala
     Pyruvate -&gt; bOHbutyrate}&quot;)</code></pre>
-<div id="htmlwidget-f9a68e42b5567feb05b0" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f9a68e42b5567feb05b0">{"x":{"diagram":"digraph {Insulin -> Glucose\n    Glucose -> Glucose\n    Pyruvate -> Glucose\n    Insulin -> Insulin\n    Cpeptide -> Insulin \n    Glucose -> Cpeptide\n    Cpeptide -> Cpeptide\n    Glucose -> Pyruvate\n    Lactate -> Pyruvate\n    Ala -> Pyruvate\n    Pyruvate -> Lactate\n    Pyruvate -> Ala\n    Pyruvate -> bOHbutyrate}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-902ebaeedfe189c977d5" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-902ebaeedfe189c977d5">{"x":{"diagram":"digraph {Insulin -> Glucose\n    Glucose -> Glucose\n    Pyruvate -> Glucose\n    Insulin -> Insulin\n    Cpeptide -> Insulin \n    Glucose -> Cpeptide\n    Cpeptide -> Cpeptide\n    Glucose -> Pyruvate\n    Lactate -> Pyruvate\n    Ala -> Pyruvate\n    Pyruvate -> Lactate\n    Pyruvate -> Ala\n    Pyruvate -> bOHbutyrate}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 <p>The directed graph indicates the parent variables of each variable as below.</p>
 <ul>
 <li>Glucose: Insulin, Glucose, Pyruvate</li>
