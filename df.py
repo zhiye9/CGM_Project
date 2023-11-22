@@ -84,6 +84,7 @@ df_glu_insulin = df_glu_insulin.sort_values(['copsacno', 'TIMEPOINT'])
 df_glu_insulin_8 = df_glu_insulin.groupby('copsacno').filter(lambda x: len(x) == 8)
 #df_glu_insulin_8.to_csv('/home/zhi/data/CGM/CGM_DATA/df_glu_insulin_Cpeptid.csv', index = False)
 #df_glu_insulin_8.to_csv('/home/zhi/data/CGM/CGM_DATA/df_biochem_insulin_Cpeptid.csv', index = False)
+df_glu_insulin_8 = pd.read_csv('/home/zhi/data/CGM/CGM_DATA/df_biochem_insulin_Cpeptid.csv')
 
 df_glu_insulin_Cpeptid = pd.read_csv('/home/zhi/data/CGM/CGM_DATA/df_glu_insulin_Cpeptid.csv')
 df_glu_insulin_Cpeptid['copsacno'] = df_glu_insulin_Cpeptid['copsacno'].astype(str)
