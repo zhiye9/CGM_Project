@@ -77,6 +77,7 @@ df_diet2['age'] = df_diet2['age'].astype(float)
 df_diet2 = df_diet2[['copsacno', 'TIMEPOINT', 'age', 'Insulin', 'C-peptid_nmol/L']]
 df_diet2['copsacno'] = df_diet2['copsacno'].astype(str)
 df_diet2['TIMEPOINT'] = df_diet2['TIMEPOINT'].astype(float)
+
 df_glu_insulin = pd.merge(df_diet2, df_diet, on = ['copsacno', 'TIMEPOINT'])
 df_glu_insulin = df_glu_insulin.rename(columns={'C-peptid_nmol/L': 'C-peptid'})
 
@@ -88,6 +89,16 @@ df_glu_insulin_8 = pd.read_csv('/home/zhi/data/CGM/CGM_DATA/df_biochem_insulin_C
 
 df_glu_insulin_Cpeptid = pd.read_csv('/home/zhi/data/CGM/CGM_DATA/df_glu_insulin_Cpeptid.csv')
 df_glu_insulin_Cpeptid['copsacno'] = df_glu_insulin_Cpeptid['copsacno'].astype(str)
+
+#drop all columns with % in column names
+df_biochem_glu_insulin_8 = df_glu_insulin_8.loc[:,~df_glu_insulin_8.columns.str.contains('%')]
+df_biochem_glu_insulin_8.drop(columns = ['SAMPLEDATE'], inplace = True)
+df_biochem_glu_insulin_8 = df_biochem_glu_insulin_8.loc[:,~df_biochem_glu_insulin_8.columns.str.contains('Clinical')]
+df_biochem_glu_insulin_8 = df_biochem_glu_insulin_8.loc[:,~df_biochem_glu_insulin_8.columns.str.contains('/')]
+df_biochem_glu_insulin_8.drop(columns = ['Phe'], inplace = True)
+df_biochem_glu_insulin_8 = df_biochem_glu_insulin_8.loc[:,~df_biochem_glu_insulin_8.columns.str.contains('size')]
+df_biochem_glu_insulin_8.drop(columns = ['Glycerol'], inplace = True)
+df_biochem_glu_insulin_8.to_csv('/home/zhi/data/CGM/CGM_DATA/df_biochem_insulin_Cpeptid_filtered.csv', index = False)
 
 test1 = df_glu_insulin[df_glu_insulin['copsacno'] == '95'].sort_values('TIMEPOINT')[['copsacno', 'TIMEPOINT', 'Glucose', 'Insulin']]
 test2 = df_glu_insulin[df_glu_insulin['copsacno'] == '101'].sort_values('TIMEPOINT')[['copsacno', 'TIMEPOINT', 'Glucose', 'Insulin']]
